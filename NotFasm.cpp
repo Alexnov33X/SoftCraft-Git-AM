@@ -1,5 +1,4 @@
 // Миронов Александр БПИ194 Вариант 11
-
 #include <iostream>
 #include <iomanip>
 #include <thread>
@@ -8,6 +7,15 @@
 #include <vector>
 //Итеративный параллелизм
 using namespace std;
+/**
+ * главная функция для потоков, реализует итеративный параллелизм 
+ * index - номер потока, так как всего их 8, то они работают через 8 значений, таким образом не пересекаясь друг с другом
+ * n - количество элементов в массиве А
+ * arr - массив А
+ * &maxnumber - ссылка на адрес максимального числа, сюда массивы записывают свой максимум если он превышает тот что по адресу
+ * maximum - опция для функции, если она true, то идёт сравнение максимумов, при равенстве i,j отправляются в вектор maxes
+ * maxes - вектор строк, который содержит все подходящие i,j в формате строки:"i= "+i+" j= "+ j+"\n"
+ */
 void function(int index,int n, int *arr, long &maxnumber, bool maximum, vector<string> &maxes) //функция А[i] – A[i+1] + A[i+2] – A[i+3] + … A[j], которая сравнивает результат с макс. числом
 {
     long max = arr[index];
@@ -57,7 +65,7 @@ int main()
             cin >> n;
         }
         int* A = new int[n];
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++) //генерируем массив А и выводим его элементы в консоль
         {
             A[i] = rand();
             cout << "A[" << i << "]=" << A[i] << endl;
@@ -65,13 +73,13 @@ int main()
 
         for (int i = 0; i < 8; i++)
         {
-            thr[i] = (new thread{ function, i, n, A, ref(maxnumber), false, ref(maxes) });
+            thr[i] = (new thread{ function, i, n, A, ref(maxnumber), false, ref(maxes) }); //запускаем потоки, которые по функции ищут максимум и переписывают его
         }
         for (int i = 0; i < 8; i++)
         {
             thr[i]->join();
             delete(thr[i]);
-            thr[i] = (new thread{ function, i, n, A, ref(maxnumber), true, ref(maxes) });
+            thr[i] = (new thread{ function, i, n, A, ref(maxnumber), true, ref(maxes) }); //запускаем снова потоки, но теперь сравниваем с максимумом и записываем значения i,j в вектор maxes
         }
         for (int i = 0; i < 8; i++)
         {
@@ -79,7 +87,7 @@ int main()
             delete(thr[i]);
         }
         cout << "MAX number is " << maxnumber << endl;
-        for (size_t i = 0; i < maxes.size(); i++)
+        for (size_t i = 0; i < maxes.size(); i++) //выводим из вектора все i,j которые дают максимум
         {
             cout << maxes[i];
         }
@@ -90,14 +98,3 @@ int main()
     }
     return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
